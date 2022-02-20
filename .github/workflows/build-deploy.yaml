@@ -1,0 +1,61 @@
+# This workflow can be used to build and deploy the iOS and Android app
+# With manual triggers you can also choose to only build for a specific environemnt
+
+name: Check & analyze PR
+
+on: 
+  # pull_request: # this can also be automated when merging into a specific release branch
+  #   branch:
+  #     - release-candidate
+  # schedule: # or it can be scheduled whenever you want to create a build
+  #   # (UTC timezone) Run at the end of every workday
+  #   - cron: 0 0 * * 1-5
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment e.g dev, staging or production?'
+        required: true
+        type: choice
+        default: dev
+        options:
+        - dev
+        - staging
+        - production
+      deploy:
+        description: 'Deploy the apps?'
+        required: true
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-android-dev:
+    if: ${{ github.event.inputs.environment == 'dev' }}
+    uses: ./.github/workflows/build-android.yaml
+
+  build-ios-dev:
+    if: ${{ github.event.inputs.environment == 'dev' }}
+    uses: ./.github/workflows/build-ios.yaml
+
+  deploy-ios-dev:
+    name: Deploy iOS Dev
+    needs: [build-ios-dev]
+    if: ${{ github.event.inputs.environment == 'dev' && github.event.inputs.deploy }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Example'
+        run: echo "iOS build & deploy passed"
+
+  deploy-android-dev:
+    name: Deploy Android Dev
+    needs: [build-android-dev]
+    if: ${{ github.event.inputs.environment == 'dev' && github.event.inputs.deploy }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Example'
+        run: echo "Android build & deploy passed"
