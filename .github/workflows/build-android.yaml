@@ -10,22 +10,24 @@ jobs:
   build:
     name: Build Android
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set global environment variables
-        uses: .github/actions/setvars
-        with:
-          varFilePath: .github/variables/global.env
+    - name: Checkout repository
+      uses: actions/checkout@v2
       
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+    - name: Set global environment variables
+      uses: .github/actions/setvars
+      with:
+        varFilePath: .github/variables/global.env
+    
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
 
-      - name: Get dependencies
-        run: flutter pub get
+    - name: Get dependencies
+      run: flutter pub get
 
-      - name: Build
-        run: flutter build apk --no-pub
+    - name: Build APK
+      run: flutter build apk --no-pub
