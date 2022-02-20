@@ -1,0 +1,6 @@
+{
+  "appTitle": "flutter_github_actions_advanced",
+  "@appTitle": {
+    "description": "The title of the application"
+  }
+}
