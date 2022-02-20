@@ -34,4 +34,4 @@ jobs:
       
   build-android:
     needs: [code-analysis-and-testing]
-    uses: ./.github/workflows/build_android.yaml
+    uses: ./.github/workflows/build-android.yaml
