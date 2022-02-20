@@ -1,0 +1,35 @@
+# This workflow analyzes code and runs tests on every PR into the main branch.
+
+name: Check & analyze PR
+
+on: 
+  pull_request:
+    branch:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-and-test:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set global environment variables
+        uses: .github/actions/setvars
+        with:
+          varFilePath: .github/variables/global.env
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+      
+  build-android:
+    needs: [analyze-and-test]
+    uses: .github/workflows/build_android.yaml
