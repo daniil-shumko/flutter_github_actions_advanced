@@ -1,7 +1,7 @@
 # This workflow can be used to build and deploy the iOS and Android app
 # With manual triggers you can also choose to only build for a specific environemnt
 
-name: Check & analyze PR
+name: Build and deploy
 
 on: 
   # pull_request: # this can also be automated when merging into a specific release branch
