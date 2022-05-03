@@ -22,7 +22,7 @@ on:
         - staging
         - production
       deploy:
-        description: 'Deploy the apps?'
+        description: 'Deploy the apps'
         required: true
         type: boolean
         default: false
@@ -33,6 +33,7 @@ concurrency:
 
 jobs:
   code-analysis-and-testing:
+    name: Code analysis & testing
     uses: ./.github/workflows/code-analysis-and-testing.yaml
 
   build-android-dev:
@@ -50,7 +51,7 @@ jobs:
   deploy-ios-dev:
     name: Deploy iOS Dev
     needs: [build-ios-dev]
-    if: ${{ github.event.inputs.environment == 'dev' && github.event.inputs.deploy }}
+    if: ${{ github.event.inputs.environment == 'dev' && github.event.inputs.deploy == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -60,7 +61,7 @@ jobs:
   deploy-android-dev:
     name: Deploy Android Dev
     needs: [build-android-dev]
-    if: ${{ github.event.inputs.environment == 'dev' && github.event.inputs.deploy }}
+    if: ${{ github.event.inputs.environment == 'dev' && github.event.inputs.deploy == true }}
     runs-on: ubuntu-latest
 
     steps:
