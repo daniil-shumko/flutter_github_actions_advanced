@@ -32,13 +32,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  code-analysis-and-testing:
+    uses: ./.github/workflows/code-analysis-and-testing.yaml
+
   build-android-dev:
     name: Dev
+    needs: [code-analysis-and-testing]
     if: ${{ github.event.inputs.environment == 'dev' }}
     uses: ./.github/workflows/build-android.yaml
 
   build-ios-dev:
     name: Dev
+    needs: [code-analysis-and-testing]
     if: ${{ github.event.inputs.environment == 'dev' }}
     uses: ./.github/workflows/build-ios.yaml
 
