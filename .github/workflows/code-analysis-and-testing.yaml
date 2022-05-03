@@ -1,0 +1,27 @@
+# This reusable workflow is used to analyse and test the code.
+# See this page for more info https://docs.github.com/en/actions/using-workflows/reusing-workflows
+
+name: Code analysis and testing
+
+on: 
+  workflow_call:
+
+jobs:
+  run:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set global environment variables
+      uses: ./.github/actions/setvars
+      with:
+        varFilePath: .github/variables/global.env
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }} 
