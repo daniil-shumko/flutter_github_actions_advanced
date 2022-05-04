@@ -13,12 +13,11 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment e.g dev, staging or production?'
+        description: 'Environment e.g staging or production?'
         required: true
         type: choice
-        default: dev
+        default: staging
         options:
-        - dev
         - staging
         - production
       deploy:
@@ -32,36 +31,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  code-analysis-and-testing:
-    name: Code analysis & testing
-    uses: ./.github/workflows/code-analysis-and-testing.yaml
+  analysis-and-testing:
+    name: Analysis & testing
+    uses: ./.github/workflows/analysis-and-testing.yaml
 
-  build-android-dev:
-    name: Dev
-    needs: [code-analysis-and-testing]
-    if: ${{ github.event.inputs.environment == 'dev' }}
+  build-android-staging:
+    name: Staging
+    needs: [analysis-and-testing]
+    if: ${{ github.event.inputs.environment == 'staging' }}
     uses: ./.github/workflows/build-android.yaml
 
-  build-ios-dev:
-    name: Dev
-    needs: [code-analysis-and-testing]
-    if: ${{ github.event.inputs.environment == 'dev' }}
+  build-ios-staging:
+    name: Staging
+    needs: [analysis-and-testing]
+    if: ${{ github.event.inputs.environment == 'staging' }}
     uses: ./.github/workflows/build-ios.yaml
 
-  deploy-ios-dev:
-    name: Deploy iOS Dev
-    needs: [build-ios-dev]
-    if: ${{ github.event.inputs.environment == 'dev' && github.event.inputs.deploy == true }}
+  deploy-ios-staging:
+    name: Deploy iOS Staging
+    needs: [build-ios-staging]
+    if: ${{ github.event.inputs.environment == 'staging' && github.event.inputs.deploy == true }}
     runs-on: ubuntu-latest
 
     steps:
       - name: 'Example'
         run: echo "iOS build & deploy passed"
 
-  deploy-android-dev:
-    name: Deploy Android Dev
-    needs: [build-android-dev]
-    if: ${{ github.event.inputs.environment == 'dev' && github.event.inputs.deploy == true }}
+  deploy-android-staging:
+    name: Deploy Android Staging
+    needs: [build-android-staging]
+    if: ${{ github.event.inputs.environment == 'staging' && github.event.inputs.deploy == true }}
     runs-on: ubuntu-latest
 
     steps:

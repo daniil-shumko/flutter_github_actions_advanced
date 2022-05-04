@@ -13,13 +13,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  code-analysis-and-testing:
-    uses: ./.github/workflows/code-analysis-and-testing.yaml
+  analysis-and-testing:
+    name: Analysis & testing
+    uses: ./.github/workflows/analysis-and-testing.yaml
       
   build-android:
-    needs: [code-analysis-and-testing]
+    needs: [analysis-and-testing]
     uses: ./.github/workflows/build-android.yaml
 
   build-ios:
-    needs: [code-analysis-and-testing]
+    needs: [analysis-and-testing]
     uses: ./.github/workflows/build-ios.yaml

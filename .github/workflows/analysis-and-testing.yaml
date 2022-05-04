@@ -1,7 +1,7 @@
 # This reusable workflow is used to analyse and test the code.
 # See this page for more info https://docs.github.com/en/actions/using-workflows/reusing-workflows
 
-name: Code analysis and testing
+name: Analysis and testing
 
 on: 
   workflow_call:
