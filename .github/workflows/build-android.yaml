@@ -31,15 +31,15 @@ jobs:
 
     - name: Prepare key.jks & key.properties files
       env:
-        KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
-        KEY_PROPERTIES_FILE: ${{ secrets.KEY_PROPERTIES_FILE }}
+        PP_KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+        PP_KEY_PROPERTIES_FILE: ${{ secrets.KEY_PROPERTIES_FILE }}
       run: |
         echo "Converting key base64 string to a file"
-        echo "$KEYSTORE_FILE" >> key.jks.base64
+        echo "$PP_KEYSTORE_FILE" >> key.jks.base64
         base64 --decode key.jks.base64 > key.jks
 
         echo "Converting key.properties secret string to a file"
-        echo "$KEY_PROPERTIES_FILE" >> key.properties
+        echo "$PP_KEY_PROPERTIES_FILE" >> key.properties
       working-directory: 'android/'
 
     - name: Build AAB

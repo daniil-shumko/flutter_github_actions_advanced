@@ -36,14 +36,14 @@ jobs:
 
     - name: Prepare signing # todo: migrate to automatic signing & API key
       env:
-        FS_KEYCHAIN_PASS: ${{ secrets.FS_KEYCHAIN_PASS }}
-        FS_P12_FILE: ${{ secrets.FS_P12_FILE }}
-        FS_P12_PASS: ${{ secrets.FS_P12_PASS }}
-        FS_PROV_FILE: ${{ secrets.FS_PROV_FILE }}
+        PP_KEYCHAIN_PASS: ${{ secrets.KEYCHAIN_PASS }}
+        PP_P12_FILE: ${{ secrets.P12_FILE }}
+        PP_P12_PASS: ${{ secrets.P12_PASS }}
+        PP_PROV_FILE: ${{ secrets.PROV_FILE }}
       run: |
         echo "Convert base64 strings to files"
-        echo "$FS_PROV_FILE" >> prov.temp.txt
-        echo "$FS_P12_FILE ">> cert.temp.txt
+        echo "$PP_PROV_FILE" >> prov.temp.txt
+        echo "$PP_P12_FILE ">> cert.temp.txt
         base64 --decode prov.temp.txt > prov.temp.mobileprovision
         base64 --decode cert.temp.txt > cert.temp.p12
 
@@ -52,24 +52,24 @@ jobs:
         cp prov.temp.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/prov.mobileprovision
 
         echo "Create a new keychain & import p12 certificate"
-        security create-keychain -p "$FS_KEYCHAIN_PASS" build.keychain
-        security import cert.temp.p12 -t agg -k ~/Library/Keychains/build.keychain -P "$FS_P12_PASS" -A
+        security create-keychain -p "$PP_KEYCHAIN_PASS" build.keychain
+        security import cert.temp.p12 -t agg -k ~/Library/Keychains/build.keychain -P "$PP_P12_PASS" -A
 
         echo "Set new keychain as a default"
         security list-keychains -s ~/Library/Keychains/build.keychain
         security default-keychain -s ~/Library/Keychains/build.keychain
-        security unlock-keychain -p "$FS_KEYCHAIN_PASS" ~/Library/Keychains/build.keychain
-        security set-key-partition-list -S apple-tool:,apple: -s -k "$FS_KEYCHAIN_PASS" ~/Library/Keychains/build.keychain
+        security unlock-keychain -p "$PP_KEYCHAIN_PASS" ~/Library/Keychains/build.keychain
+        security set-key-partition-list -S apple-tool:,apple: -s -k "$PP_KEYCHAIN_PASS" ~/Library/Keychains/build.keychain
 
         echo "Clean up temp files"
         rm *.temp.*
 
     - name: Build IPA
       env:
-        FS_KEYCHAIN_PASS: ${{ secrets.FS_KEYCHAIN_PASS }}
+        PP_KEYCHAIN_PASS: ${{ secrets.KEYCHAIN_PASS }}
       run: |
         echo "Unlocking keychain"
-        security unlock-keychain -p "$FS_KEYCHAIN_PASS" ~/Library/Keychains/build.keychain
+        security unlock-keychain -p "$PP_KEYCHAIN_PASS" ~/Library/Keychains/build.keychain
 
         # Important, just in case the build takes longer than the default 300s timeout
         # Otherwise the build will freeze at signing the frameworks if the keychain is locked
@@ -89,8 +89,8 @@ jobs:
 
     - name: Publishing app to TestFlight
       env:
-        FS_APPLE_ID_USERNAME: ${{ secrets.FS_APPLE_ID_USERNAME }}
-        FS_APPLE_ID_APP_SPECIFIC_PASS: ${{ secrets.FS_APPLE_ID_APP_SPECIFIC_PASS }}
-        FS_IPA_PATH: ${{ env.PATH_TO_AAB }}
+        PP_APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
+        PP_APPLE_ID_APP_SPECIFIC_PASS: ${{ secrets.APPLE_ID_APP_SPECIFIC_PASS }}
+        PP_IPA_PATH: ${{ env.PATH_TO_AAB }}
       run: | # todo: may be migrated to fastlane supply? Use API key to upload
-        xcrun altool --upload-app -t ios -f "$FS_IPA_PATH" -u "$FS_APPLE_ID_USERNAME" -p "$FS_APPLE_ID_APP_SPECIFIC_PASS"
+        xcrun altool --upload-app -t ios -f "$PP_IPA_PATH" -u "$PP_APPLE_ID_USERNAME" -p "$PP_APPLE_ID_APP_SPECIFIC_PASS"
