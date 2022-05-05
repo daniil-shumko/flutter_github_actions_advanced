@@ -16,20 +16,23 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       
-    - name: Set global environment variables
-      uses: ./.github/actions/setvars
-      with:
-        varFilePath: ./.github/variables/global.env
-        
-    - name: Set up Xcode
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: ${{ env.XCODE_VERSION }}
+    - name: Set up environment
+      uses: ./.github/actions/setup_environment
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
+    # - name: Set global environment variables
+    #   uses: ./.github/actions/setvars
+    #   with:
+    #     varFilePath: ./.github/variables/global.env
+        
+    # - name: Set up Xcode
+    #   uses: maxim-lobanov/setup-xcode@v1
+    #   with:
+    #     xcode-version: ${{ env.XCODE_VERSION }}
+
+    # - name: Set up Flutter
+    #   uses: subosito/flutter-action@v2
+    #   with:
+    #     flutter-version: ${{ env.FLUTTER_VERSION }}
 
     - name: Get dependencies
       run: flutter pub get
