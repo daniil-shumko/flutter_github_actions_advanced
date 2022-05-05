@@ -29,8 +29,28 @@ jobs:
     #   with:
     #     flutter-version: ${{ env.FLUTTER_VERSION }}
 
-    - name: Get dependencies
-      run: flutter pub get
+    - name: Prepare key.jks & key.properties files
+      env:
+        KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+        KEY_PROPERTIES_FILE: ${{ secrets.KEY_PROPERTIES_FILE }}
+      run: |
+        echo "Converting key base64 string to a file"
+        echo "$KEYSTORE_FILE" >> key.jks.base64
+        base64 --decode key.jks.base64 > key.jks
+
+        echo "Converting key.properties secret string to a file"
+        echo "$KEY_PROPERTIES_FILE" >> key.properties
+      working-directory: 'android/'
 
     - name: Build AAB
-      run: flutter build bundle --no-pub
+      run: flutter build appbundle --release
+
+    - name: Upload AAB artifact 
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-aab
+        path: ${{ env.PATH_TO_AAB }} # todo: cache this to use in a deploy job
+
+    - name: Upload to Play Store # todo: extract to build-deploy
+      run: |
+        fastlane supply --aab ${{ env.PATH_TO_AAB }} --json_key_data '${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON }}' --package_name '${{ env.ANDROID_PACKAGE_NAME }}' --track 'internal'
